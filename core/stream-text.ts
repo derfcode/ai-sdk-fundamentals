@@ -1,16 +1,18 @@
 import { openai } from "@ai-sdk/openai";
-import { generateText } from "ai";
+import { streamText } from "ai";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 async function main() {
-  const result = await generateText({
+  const result = await streamText({
     model: openai("gpt-4o"),
     prompt: "Tell me a joke.",
   });
 
-  console.log(result.text);
+  for await (const textPart of result.textStream) {
+    process.stdout.write(textPart);
+  }
 }
 
 main().catch(console.error);

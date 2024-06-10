@@ -1,17 +1,20 @@
 import { openai } from "@ai-sdk/openai";
-import { streamText } from "ai";
+import { streamObject } from "ai";
 import dotenv from "dotenv";
+import { z } from "zod";
 
 dotenv.config();
 
 async function main() {
-  const result = await streamText({
+  const result = await streamObject({
     model: openai("gpt-4o"),
     prompt: "Tell me a joke.",
+    schema: z.object({ setup: z.string(), punchline: z.string() }),
   });
 
-  for await (const textPart of result.textStream) {
-    process.stdout.write(textPart);
+  for await (const partialObject of result.partialObjectStream) {
+    console.clear();
+    console.log(partialObject);
   }
 }
 
